@@ -4,8 +4,8 @@ import { loginPayload, signupPayload } from "../types/apiPayload";
 export const quizzleApi = createApi({
   reducerPath: "quizzleApi",
   baseQuery: fetchBaseQuery({
-    //baseUrl: "https://wordle-my-backend.vercel.app",
-    baseUrl: "http://127.0.0.1:4001",
+    baseUrl: "https://quizzle-backend.vercel.app/",
+    //baseUrl: "http://127.0.0.1:4001",
   }),
   tagTypes: ["challengers", "challenger", "questions"],
   endpoints: (builder) => ({
