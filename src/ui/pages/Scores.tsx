@@ -32,7 +32,7 @@ const Scores = () => {
             Challengers Totali
           </h2>
           <p className="text-3xl font-bold text-blue-600">
-            {scoresData?.length}
+            {scoresData?.length || 0}
           </p>
         </div>
         <div className="bg-white p-2 rounded-lg shadow text-center">
@@ -40,10 +40,14 @@ const Scores = () => {
             Punteggio Medio
           </h2>
           <p className="text-3xl font-bold text-blue-600">
-            {(
-              (scoresData || [])?.reduce((sum, user) => sum + user.score, 0) /
-              (scoresData || [])?.length
-            ).toFixed(1)}
+            {!scoresData || scoresData?.length === 0
+              ? 0
+              : (
+                  (scoresData || [])?.reduce(
+                    (sum, user) => sum + user.score,
+                    0
+                  ) / (scoresData || [])?.length
+                ).toFixed(1)}
           </p>
         </div>
         <div className="bg-white p-2 rounded-lg shadow text-center">
@@ -51,7 +55,9 @@ const Scores = () => {
             Punteggio Massimo
           </h2>
           <p className="text-3xl font-bold text-blue-600">
-            {Math.max(...(scoresData?.map((user) => user.score) || []))}
+            {!scoresData || scoresData?.length === 0
+              ? 0
+              : Math.max(...(scoresData?.map((user) => user.score) || []))}
           </p>
         </div>
       </div>
@@ -72,6 +78,15 @@ const Scores = () => {
               </TableRow>
             </TableHead>
             <TableBody className="overflow-auto">
+              {(!scoresData || scoresData?.length === 0) && (
+                <TableRow key="no-user-row" className="bg-gray-50 ">
+                  <TableCell colSpan={5}>
+                    <p className="flex justify-center w-full font-semibold">
+                      Non sono presenti challenger
+                    </p>
+                  </TableCell>
+                </TableRow>
+              )}
               {scoresData?.map((user, index) => (
                 <TableRow
                   key={user.name}
