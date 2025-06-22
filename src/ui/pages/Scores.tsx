@@ -8,7 +8,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import useAdmin from "../../hooks/useAdmin";
 
 const Scores = () => {
@@ -21,6 +23,7 @@ const Scores = () => {
   }, [scores]);
 
   const calculateProgress = (points: number, totalPoints: number) => {
+    if (points === 0) return 0;
     return (points / totalPoints) * 100;
   };
 
@@ -31,7 +34,7 @@ const Scores = () => {
           <h2 className="text-sm font-semibold text-gray-700">
             Challengers Totali
           </h2>
-          <p className="text-3xl font-bold text-blue-600">
+          <p className="text-3xl font-bold text-blue-500">
             {scoresData?.length || 0}
           </p>
         </div>
@@ -39,7 +42,7 @@ const Scores = () => {
           <h2 className="text-sm font-semibold text-gray-700">
             Punteggio Medio
           </h2>
-          <p className="text-3xl font-bold text-blue-600">
+          <p className="text-3xl font-bold text-blue-500">
             {!scoresData || scoresData?.length === 0
               ? 0
               : (
@@ -54,7 +57,7 @@ const Scores = () => {
           <h2 className="text-sm font-semibold text-gray-700">
             Punteggio Massimo
           </h2>
-          <p className="text-3xl font-bold text-blue-600">
+          <p className="text-3xl font-bold text-blue-500">
             {!scoresData || scoresData?.length === 0
               ? 0
               : Math.max(...(scoresData?.map((user) => user.score) || []))}
@@ -62,11 +65,14 @@ const Scores = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <h2 className="text-xl font-semibold p-4 bg-blue-600 text-white">
-          Classifica
+      <div
+        className="bg-white rounded-lg shadow overflow-hidden"
+        style={{ height: "100%" }}
+      >
+        <h2 className="text-xl font-semibold p-4 bg-blue-500 text-white">
+          Classifica 🏆
         </h2>
-        <TableContainer className="overflow-x-auto min-h-80">
+        <TableContainer className="overflow-x-auto" style={{ height: "100%" }}>
           <Table stickyHeader className="w-full">
             <TableHead className="bg-gray-100">
               <TableRow>
@@ -74,7 +80,7 @@ const Scores = () => {
                 <TableCell className="py-3 px-4 text-left">Nome</TableCell>
                 <TableCell className="py-3 px-4 text-left">Punteggio</TableCell>
                 <TableCell className="py-3 px-4 text-left">Progresso</TableCell>
-                <TableCell className="py-3 px-4 text-left">Totale</TableCell>
+                <TableCell className="py-3 px-4 text-left">Mancanti</TableCell>
               </TableRow>
             </TableHead>
             <TableBody className="overflow-auto">
@@ -102,18 +108,24 @@ const Scores = () => {
                   <TableCell className="py-3 px-4 w-1/3">
                     <div className="w-full bg-gray-200 rounded-full h-4">
                       <div
-                        className="bg-blue-600 h-4 rounded-full"
+                        className="bg-blue-500 h-4 rounded-full"
                         style={{
                           width: `${calculateProgress(
                             user.score,
                             user.totalQuestions
                           )}%`,
                         }}
-                      ></div>
+                      />
                     </div>
                   </TableCell>
                   <TableCell className="py-3 px-4">
-                    {user.totalQuestions}
+                    {user.notAnsweredQuestions > 0 ? (
+                      <Typography color="error" fontWeight={700}>
+                        {user.notAnsweredQuestions}
+                      </Typography>
+                    ) : (
+                      <CheckCircleOutlineIcon color="success" />
+                    )}
                   </TableCell>
                 </TableRow>
               ))}

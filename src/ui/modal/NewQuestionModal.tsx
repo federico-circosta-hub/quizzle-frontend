@@ -2,19 +2,15 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   TextField,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
+  Drawer,
+  IconButton,
 } from "@mui/material";
-import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
+import AddIcon from "@mui/icons-material/Add";
 import { NewQuestion } from "../../types/questions";
-import {
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-} from "@mui/material";
+import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { useAddQuestionMutation } from "../../redux/api";
 import { addQuestionPayload } from "../../types/apiPayload";
 import { useSelector } from "react-redux";
@@ -116,18 +112,21 @@ const NewQuestionModal = () => {
 
   return (
     <>
-      <Button
+      <IconButton
+        color="primary"
+        size="large"
         onClick={handleClickOpenDialog}
-        variant="contained"
-        color="info"
-        endIcon={<AddCircleOutlineRoundedIcon />}
+        className="shadow-lg"
       >
-        Nuova
-      </Button>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <AddIcon color="info" />
+      </IconButton>
+
+      <Drawer open={openDialog} onClose={handleCloseDialog} anchor="bottom">
         <DialogContent>
           <DialogContentText fontWeight={700}>Domanda</DialogContentText>
           <TextField
+            multiline={true}
+            rows={4}
             onChange={onInputChange}
             autoFocus
             name="question"
@@ -135,26 +134,35 @@ const NewQuestionModal = () => {
             margin="dense"
             type="text"
             fullWidth
-            variant="standard"
+            variant="outlined"
+            autoComplete="off"
             value={form.question}
           />
           <DialogContentText fontWeight={700}>Risposte</DialogContentText>
           <div className="flex justify-between items-center">
-            <FormControl>
-              <RadioGroup value={form.correctOpt} onChange={handleRadio}>
+            <div className="w-full flex flex-col justify-between">
+              <RadioGroup onChange={handleRadio}>
                 {form.options.map((element, index) => (
                   <div className="w-full flex justify-between">
-                    <TextField
-                      onChange={(e) => onInputChange(e, index)}
-                      name="opt"
-                      required
-                      fullWidth
-                      margin="dense"
-                      type="text"
-                      variant="standard"
-                      value={element}
-                    />
-
+                    <div className="w-5/6">
+                      <TextField
+                        color={
+                          form.correctOpt === index ? "success" : undefined
+                        }
+                        focused={form.correctOpt === index}
+                        multiline={true}
+                        rows={2}
+                        autoComplete="off"
+                        onChange={(e) => onInputChange(e, index)}
+                        name="opt"
+                        required
+                        fullWidth
+                        margin="dense"
+                        type="text"
+                        variant="outlined"
+                        value={element}
+                      />
+                    </div>
                     <FormControlLabel
                       sx={{ margin: 0 }}
                       value={index}
@@ -164,7 +172,7 @@ const NewQuestionModal = () => {
                   </div>
                 ))}
               </RadioGroup>
-            </FormControl>
+            </div>
           </div>
         </DialogContent>
         <DialogActions>
@@ -176,7 +184,7 @@ const NewQuestionModal = () => {
             Salva
           </Button>
         </DialogActions>
-      </Dialog>
+      </Drawer>
       <CustomizedSnackbar
         isOpen={!!snackbarProps?.isOpen}
         setOwn={snackbarProps?.setOwn}

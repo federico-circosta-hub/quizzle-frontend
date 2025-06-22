@@ -61,25 +61,26 @@ const Challengers = () => {
 
   return (
     <div className="w-11/12 mx-auto flex flex-col h-full justify-start gap-4">
-      <div className="grid grid-cols-3 gap-2 mb-2">
-        <div className="bg-white p-2 rounded-lg shadow text-center">
-          <h2 className="text-sm font-semibold text-gray-700">
-            Challenger totali
-          </h2>
-          <p className="text-3xl font-bold text-blue-600">
-            {challengersData?.length || 0}
-          </p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="p-4 bg-blue-600 text-white flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Challenger</h2>
+      <div
+        className="bg-white rounded-lg shadow overflow-hidden"
+        style={{ height: "95%" }}
+      >
+        <div className="p-4 bg-blue-500 text-white flex justify-between items-center">
+          <h2 className="text-xl font-semibold">{`Challenger (${challengersData?.length})`}</h2>
           <NewChallengerModal />
         </div>
-        <TableContainer className="overflow-auto h-80">
+        <TableContainer className="overflow-auto" style={{ height: "100%" }}>
           <Table stickyHeader className="w-full">
             <TableBody className="overflow-auto">
+              {(!challengersData || challengersData?.length === 0) && (
+                <TableRow key="no-question-row" className="bg-gray-50 ">
+                  <TableCell>
+                    <p className="flex justify-center w-full font-semibold">
+                      Non hai ancora creato dei challenger
+                    </p>
+                  </TableCell>
+                </TableRow>
+              )}
               <TableRow>
                 <TableCell sx={{ padding: 0 }} className="font-medium">
                   {challengersData?.map((c, index) => {

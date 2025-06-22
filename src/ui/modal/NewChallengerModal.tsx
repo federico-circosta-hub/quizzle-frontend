@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import {
   Button,
   TextField,
-  Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
+  IconButton,
+  Drawer,
 } from "@mui/material";
-import AddCircleOutlineRoundedIcon from "@mui/icons-material/AddCircleOutlineRounded";
+import AddIcon from "@mui/icons-material/Add";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { errorType, snackbarPropsType } from "../../types/misc";
 import useAdmin from "../../hooks/useAdmin";
@@ -76,21 +77,21 @@ const NewChallengerModal = () => {
   ) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
-    setIsFormFilled(!!form.name.trim() && !!form.imgLink.trim());
+    setIsFormFilled(!!form.name.trim());
   };
 
   return (
     <>
-      <Button
+      <IconButton
+        color="primary"
+        size="large"
         onClick={handleClickOpenDialog}
-        variant="contained"
-        color="info"
-        endIcon={<AddCircleOutlineRoundedIcon />}
+        className="shadow-lg"
       >
-        Nuovo
-      </Button>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogContent>
+        <AddIcon color="info" />
+      </IconButton>
+      <Drawer anchor="bottom" open={openDialog} onClose={handleCloseDialog}>
+        <DialogContent className="flex flex-col gap-4">
           <DialogContentText fontWeight={700}>Nuovo Sfidante</DialogContentText>
           <TextField
             onChange={onInputChange}
@@ -101,18 +102,19 @@ const NewChallengerModal = () => {
             margin="dense"
             type="text"
             fullWidth
-            variant="standard"
+            variant="outlined"
             value={form.name}
           />
           <TextField
+            multiline
+            rows={3}
             onChange={onInputChange}
             name="imgLink"
             label="Link Immagine"
-            required
             margin="dense"
             type="text"
             fullWidth
-            variant="standard"
+            variant="outlined"
             value={form.imgLink}
           />
         </DialogContent>
@@ -125,7 +127,7 @@ const NewChallengerModal = () => {
             Salva
           </Button>
         </DialogActions>
-      </Dialog>
+      </Drawer>
       <CustomizedSnackbar
         isOpen={!!snackbarProps?.isOpen}
         setOwn={snackbarProps?.setOwn}

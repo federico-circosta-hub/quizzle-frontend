@@ -90,7 +90,7 @@ const QuestionCard = ({
             disabled={selectedAnswer === undefined || submitting}
             className={`px-4 py-2 rounded font-medium ${
               selectedAnswer !== undefined && !submitting
-                ? "bg-blue-600 text-white hover:bg-blue-700"
+                ? "bg-blue-500 text-white hover:bg-blue-700"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >

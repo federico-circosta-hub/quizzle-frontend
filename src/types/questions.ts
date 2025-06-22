@@ -4,6 +4,7 @@ export type Question = {
   options: string[];
   correctOpt: number;
   adminUsername: string;
+  isPublished: boolean;
   __v: number;
 };
 

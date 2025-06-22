@@ -7,7 +7,7 @@ export const quizzleApi = createApi({
     baseUrl: "https://quizzle-backend.vercel.app/",
     //baseUrl: "http://127.0.0.1:4001",
   }),
-  tagTypes: ["challengers", "challenger", "questions"],
+  tagTypes: ["challengers", "challenger", "questions", "scores"],
   endpoints: (builder) => ({
     //AUTHENTICATION
     signup: builder.mutation({
@@ -50,6 +50,7 @@ export const quizzleApi = createApi({
           "Content-Type": "application/json",
         },
       }),
+      providesTags: ["scores"],
     }),
 
     //QUESTION
@@ -75,6 +76,18 @@ export const quizzleApi = createApi({
       }),
       invalidatesTags: ["questions"],
     }),
+    publishQuestion: builder.mutation({
+      query: (data) => ({
+        url: `/question/publish-question`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: data.jwt,
+        },
+        body: data,
+      }),
+      invalidatesTags: ["questions"],
+    }),
     answerQuestion: builder.mutation({
       query: (data) => ({
         url: `/question/answer-question`,
@@ -85,6 +98,17 @@ export const quizzleApi = createApi({
         body: data,
       }),
       invalidatesTags: ["challenger"],
+    }),
+    deleteQuestion: builder.mutation({
+      query: (data) => ({
+        url: `/question/delete/${data.id}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: data.jwt,
+        },
+      }),
+      invalidatesTags: ["questions", "scores"],
     }),
 
     //CHALLENGER
@@ -140,6 +164,8 @@ export const {
   useDashboardQuery,
   useQuestionsQuery,
   useAddQuestionMutation,
+  usePublishQuestionMutation,
+  useDeleteQuestionMutation,
   useChallengersQuery,
   useChallengerQuery,
   useCreateChallengerMutation,

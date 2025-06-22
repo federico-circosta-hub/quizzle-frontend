@@ -93,86 +93,99 @@ const Questions = () => {
           </p>
         </div>
         <div className="ml-auto text-center">
-          <div className="text-3xl font-bold text-blue-600">
+          <div className="text-3xl font-bold text-blue-500">
             {challengerData?.score}/{totalQuestions}
           </div>
           <div className="text-sm text-gray-500">Punteggio</div>
         </div>
       </div>
 
-      <div className="flex overflow-x-auto gap-2 items-center bg-white p-2 rounded-lg shadow">
-        {questions?.map((question, index) => (
-          <button
-            key={question._id}
-            onClick={() => setCurrentQuestionIndex(index)}
-            className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-medium ${
-              index === currentQuestionIndex
-                ? question.isCorrect
-                  ? "ring-2 ring-green-500 ring-offset-1"
-                  : question.isCorrect === false
-                  ? "ring-2 ring-red-500 ring-offset-2"
-                  : "ring-2 ring-blue-600 ring-offset-2"
-                : ""
-            } ${
-              question.wasAnswered
-                ? question.isCorrect
-                  ? "bg-green-100 text-green-500"
-                  : "bg-red-100 text-red-500"
-                : "bg-blue-100 text-blue-800 hover:bg-blue-200"
-            }`}
-          >
-            {index + 1}
-          </button>
-        ))}
-      </div>
+      {questions?.length === 0 ? (
+        <p className="flex justify-center w-full font-semibold">
+          L'admin non ha ancora pubblicato domande
+        </p>
+      ) : (
+        <>
+          <div className="flex overflow-x-auto gap-2 items-center bg-white p-2 rounded-lg shadow">
+            {questions?.map((question, index) => (
+              <button
+                key={question._id}
+                onClick={() => setCurrentQuestionIndex(index)}
+                className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-medium ${
+                  index === currentQuestionIndex
+                    ? question.isCorrect
+                      ? "ring-2 ring-green-500 ring-offset-1"
+                      : question.isCorrect === false
+                      ? "ring-2 ring-red-500 ring-offset-2"
+                      : "ring-2 ring-blue-500 ring-offset-2"
+                    : ""
+                } ${
+                  question.wasAnswered
+                    ? question.isCorrect
+                      ? "bg-green-100 text-green-500"
+                      : "bg-red-100 text-red-500"
+                    : "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
 
-      <QuestionCard
-        question={currentQuestion}
-        index={currentQuestionIndex}
-        selectedAnswer={currentQuestion && selectedAnswers[currentQuestion._id]}
-        onSelectAnswer={handleSelectAnswer}
-        onSubmit={handleSubmitAnswer}
-        submitting={submitting}
-      />
-
-      <div className="flex justify-between items-center">
-        <IconButton
-          sx={{ padding: 0 }}
-          onClick={() =>
-            setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))
-          }
-          disabled={currentQuestionIndex === 0}
-        >
-          <ArrowCircleLeftOutlinedIcon
-            fontSize="large"
-            sx={{
-              color: currentQuestionIndex === 0 ? "grey" : "#f9fafb",
-            }}
+          <QuestionCard
+            question={currentQuestion}
+            index={currentQuestionIndex}
+            selectedAnswer={
+              currentQuestion && selectedAnswers[currentQuestion._id]
+            }
+            onSelectAnswer={handleSelectAnswer}
+            onSubmit={handleSubmitAnswer}
+            submitting={submitting}
           />
-        </IconButton>
 
-        <div className="text-center">
-          <span className="text-gray-50 font-medium">
-            {currentQuestionIndex + 1} di {totalQuestions}
-          </span>
-        </div>
+          <div className="flex justify-between items-center">
+            <IconButton
+              sx={{ padding: 0 }}
+              onClick={() =>
+                setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))
+              }
+              disabled={currentQuestionIndex === 0}
+            >
+              <ArrowCircleLeftOutlinedIcon
+                fontSize="large"
+                sx={{
+                  color: currentQuestionIndex === 0 ? "grey" : "#f9fafb",
+                }}
+              />
+            </IconButton>
 
-        <IconButton
-          sx={{ padding: 0 }}
-          onClick={() => setCurrentQuestionIndex((prev) => Math.min(prev + 1))}
-          disabled={currentQuestionIndex === (questions || []).length - 1}
-        >
-          <ArrowCircleRightOutlinedIcon
-            fontSize="large"
-            sx={{
-              color:
-                currentQuestionIndex === (questions || []).length - 1
-                  ? "grey"
-                  : "#f9fafb",
-            }}
-          />
-        </IconButton>
-      </div>
+            <div className="text-center">
+              <span className="text-gray-50 font-medium">
+                {currentQuestionIndex + 1} di {totalQuestions}
+              </span>
+            </div>
+
+            <IconButton
+              sx={{ padding: 0 }}
+              onClick={() =>
+                setCurrentQuestionIndex((prev) => Math.min(prev + 1))
+              }
+              disabled={currentQuestionIndex === (questions || []).length - 1}
+            >
+              <ArrowCircleRightOutlinedIcon
+                fontSize="large"
+                sx={{
+                  color:
+                    currentQuestionIndex === (questions || []).length - 1
+                      ? "grey"
+                      : "#f9fafb",
+                }}
+              />
+            </IconButton>
+          </div>
+        </>
+      )}
+
       <CustomizedSnackbar
         isOpen={!!snackbarProps?.isOpen}
         setOwn={snackbarProps?.setOwn}

@@ -49,6 +49,8 @@ const Login = () => {
     e.preventDefault();
     if (!isFormValid()) return;
     try {
+      form.username = form.username.trim();
+      form.passphrase = form.passphrase.trim();
       const response = await signupCall(form);
       if (response.error)
         return setSnackbarProps({
@@ -77,9 +79,10 @@ const Login = () => {
 
   const isFormValid = () => {
     const errors = { ...defaultFormValue };
-    if (!form.username) errors.username = defaultMissingField;
+    if (!form.username.trim()) errors.username = defaultMissingField;
     if (!form.password) errors.password = defaultMissingField;
-    if (tab === 1 && !form.passphrase) errors.passphrase = defaultMissingField;
+    if (tab === 1 && !form.passphrase.trim())
+      errors.passphrase = defaultMissingField;
     setFormError(errors);
     return !Object.values(errors).some((e) => e);
   };
