@@ -61,7 +61,7 @@ const ChallengerAppContainer = () => {
   return (
     <>
       <img
-        src={require("../../imgs/logo.png")}
+        src={require("../../imgs/logo3.png")}
         alt="quizzle logo"
         width={200}
       />

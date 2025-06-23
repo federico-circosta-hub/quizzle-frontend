@@ -104,7 +104,7 @@ const Login = () => {
   return (
     <>
       <div className="bg-white p-6 rounded-2xl shadow-lg w-11/12 max-w-md">
-        <img src={require("../../../imgs/logo.png")} alt="quizzle logo" />
+        <img src={require("../../../imgs/logo3.png")} alt="quizzle logo" />
         <Tabs
           value={tab}
           onChange={(e, newValue) => tabChange(newValue)}
