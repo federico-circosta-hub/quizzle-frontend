@@ -161,7 +161,7 @@ export const {
   useSignupMutation,
   useLoginMutation,
   useVerifyPassphraseMutation,
-  useDashboardQuery,
+  useLazyDashboardQuery,
   useQuestionsQuery,
   useAddQuestionMutation,
   usePublishQuestionMutation,

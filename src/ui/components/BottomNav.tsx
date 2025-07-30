@@ -7,7 +7,7 @@ import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 const BottomNav = ({ value, handleChange, isAdmin }) => {
   return (
     <BottomNavigation
-      className="w-full"
+      className="w-full fixed bottom-0 left-0 z-50 bg-white shadow"
       showLabels
       value={value}
       onChange={handleChange}

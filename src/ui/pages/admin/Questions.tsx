@@ -38,18 +38,15 @@ const Questions = () => {
     };
 
   return (
-    <div className="w-11/12 mx-auto flex flex-col h-full justify-start gap-4">
-      <div
-        style={{ height: "95%" }}
-        className="bg-white rounded-lg shadow overflow-hidden"
-      >
-        <div className="p-4 bg-blue-500 text-white flex justify-between items-center">
+    <div className="w-11/12 mx-auto justify-start gap-4 flex flex-col h-full">
+      <div className="bg-white rounded-lg shadow flex flex-col h-3/4">
+        <div className="p-4 bg-blue-500 text-white flex justify-between items-center flex-shrink-0">
           <h2 className="text-xl font-semibold">{`Domande (${questionsData?.length})`}</h2>
           <NewQuestionModal />
         </div>
-        <TableContainer className="overflow-auto">
+        <TableContainer className="flex-1 overflow-auto">
           <Table stickyHeader className="w-full">
-            <TableBody className="overflow-auto">
+            <TableBody>
               {(!questionsData || questionsData?.length === 0) && (
                 <TableRow key="no-question-row" className="bg-gray-50 ">
                   <TableCell>
@@ -92,13 +89,15 @@ const Questions = () => {
                               />
                             )}
                           </div>
-                          <Typography component="span">{q.question}</Typography>
+                          <Typography component="span">{`${index + 1}. ${
+                            q.question
+                          }`}</Typography>
                         </div>
                       </AccordionSummary>
                       <AccordionDetails style={{ paddingTop: 0 }}>
                         {q.options.map((op, opInd) => (
                           <div className="flex w-full" key={opInd}>
-                            - 
+                            -
                             <Typography
                               padding="1px"
                               fontWeight={opInd === q.correctOpt ? 700 : 500}

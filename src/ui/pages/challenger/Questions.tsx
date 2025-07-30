@@ -80,7 +80,7 @@ const Questions = () => {
     <div className="w-11/12 mx-auto flex flex-col h-full justify-start gap-4">
       <div className="flex items-center bg-white p-2 rounded-lg shadow">
         <img
-          src={challengerData?.imgLink}
+          src={challengerData?.imgLink || require("../../../imgs/account.png")}
           alt={challengerData?.name}
           className="w-14 h-14 object-contain mr-4"
         />
@@ -154,13 +154,13 @@ const Questions = () => {
               <ArrowCircleLeftOutlinedIcon
                 fontSize="large"
                 sx={{
-                  color: currentQuestionIndex === 0 ? "grey" : "#f9fafb",
+                  color: currentQuestionIndex === 0 ? "grey" : "#3b82f6",
                 }}
               />
             </IconButton>
 
             <div className="text-center">
-              <span className="text-gray-50 font-medium">
+              <span className="text-blue-500 font-medium">
                 {currentQuestionIndex + 1} di {totalQuestions}
               </span>
             </div>
@@ -178,7 +178,7 @@ const Questions = () => {
                   color:
                     currentQuestionIndex === (questions || []).length - 1
                       ? "grey"
-                      : "#f9fafb",
+                      : "#3b82f6",
                 }}
               />
             </IconButton>

@@ -21,7 +21,7 @@ function App({ children }) {
   });
   return (
     <ThemeProvider theme={theme}>
-      <div className="w-full h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-blue-50 gap-2">
+      <div className="w-full h-screen flex flex-col items-center justify-between bg-gradient-to-b from-white to-blue-50 gap-2 overflow-hidden">
         {children}
       </div>
     </ThemeProvider>

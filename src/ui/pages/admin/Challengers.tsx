@@ -41,7 +41,28 @@ const Challengers = () => {
 
   const handleCopy = async (textToCopy: string) => {
     try {
-      await navigator.clipboard.writeText(textToCopy);
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(textToCopy);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          document.execCommand("copy");
+        } catch (err) {
+          console.error("Fallback copy failed:", err);
+          throw new Error("Copy not supported");
+        } finally {
+          document.body.removeChild(textArea);
+        }
+      }
+
       setSnackbarProps({
         isOpen: true,
         setOwn: setSnackbarProps,
@@ -61,15 +82,14 @@ const Challengers = () => {
 
   return (
     <div className="w-11/12 mx-auto flex flex-col h-full justify-start gap-4">
-      <div
-        className="bg-white rounded-lg shadow overflow-hidden"
-        style={{ height: "95%" }}
-      >
+      <div className="bg-white rounded-lg shadow flex flex-col h-3/4">
         <div className="p-4 bg-blue-500 text-white flex justify-between items-center">
-          <h2 className="text-xl font-semibold">{`Challenger (${challengersData?.length})`}</h2>
+          <h2 className="text-xl font-semibold">{`Challenger (${
+            challengersData?.length || 0
+          })`}</h2>
           <NewChallengerModal />
         </div>
-        <TableContainer className="overflow-auto" style={{ height: "100%" }}>
+        <TableContainer className="flex-1 overflow-auto">
           <Table stickyHeader className="w-full">
             <TableBody className="overflow-auto">
               {(!challengersData || challengersData?.length === 0) && (

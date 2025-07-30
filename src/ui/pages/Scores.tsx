@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useDashboardQuery } from "../../redux/api";
+import { useLazyDashboardQuery } from "../../redux/api";
 import { scoreType } from "../../types/scores";
 import {
+  Avatar,
+  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -11,16 +13,30 @@ import {
   Typography,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import SyncIcon from "@mui/icons-material/Sync";
 import useAdmin from "../../hooks/useAdmin";
 
 const Scores = () => {
   const { username } = useAdmin();
   const [scoresData, setScoresData] = useState<scoreType[]>();
-  const scores = useDashboardQuery(username);
+  const [rotating, setRotating] = useState<boolean>();
+  const [getScoresFromApi, { isLoading, isFetching }] = useLazyDashboardQuery();
+
+  const getScores = async () => {
+    const res = await getScoresFromApi(username);
+    setScoresData(res.data);
+  };
+
+  const handleUpdate = () => {
+    setRotating(true);
+    getScores();
+    setTimeout(() => setRotating(false), 1500);
+  };
 
   useEffect(() => {
-    if (scores.data) setScoresData(scores.data);
-  }, [scores]);
+    getScores();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const calculateProgress = (points: number, totalPoints: number) => {
     if (points === 0) return 0;
@@ -28,8 +44,8 @@ const Scores = () => {
   };
 
   return (
-    <div className="w-11/12 mx-auto flex flex-col h-full justify-start gap-4">
-      <div className="grid grid-cols-3 gap-2 mb-2">
+    <div className="w-11/12 h-full mx-auto flex flex-col justify-start gap-4">
+      <div className="grid grid-cols-3 gap-2 mb-2 flex-shrink-0">
         <div className="bg-white p-2 rounded-lg shadow text-center">
           <h2 className="text-sm font-semibold text-gray-700">
             Challengers Totali
@@ -65,25 +81,38 @@ const Scores = () => {
         </div>
       </div>
 
-      <div
-        className="bg-white rounded-lg shadow overflow-hidden"
-        style={{ height: "100%" }}
-      >
-        <h2 className="text-xl font-semibold p-4 bg-blue-500 text-white">
-          Classifica 🏆
-        </h2>
-        <TableContainer className="overflow-x-auto" style={{ height: "100%" }}>
+      <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col h-2/3">
+        <div className="flex justify-between w-full bg-blue-500 items-center flex-shrink-0">
+          <h2 className="text-xl font-semibold p-4 text-white">
+            Classifica 🏆
+          </h2>
+          <IconButton
+            style={{ marginRight: "16px" }}
+            color="primary"
+            size="large"
+            onClick={() => handleUpdate()}
+            className={`h-[48px] w-[48px] ${
+              rotating ? "animate-rotate-once" : "shadow-lg"
+            }`}
+            disabled={isFetching || isLoading || rotating}
+          >
+            <SyncIcon color="info" />
+          </IconButton>
+        </div>
+
+        <TableContainer className="overflow-auto">
           <Table stickyHeader className="w-full">
             <TableHead className="bg-gray-100">
               <TableRow>
                 <TableCell className="py-3 px-4 text-left">#</TableCell>
-                <TableCell className="py-3 px-4 text-left">Nome</TableCell>
-                <TableCell className="py-3 px-4 text-left">Punteggio</TableCell>
+                <TableCell className="py-3 px-4 text-left">
+                  Challenger
+                </TableCell>
                 <TableCell className="py-3 px-4 text-left">Progresso</TableCell>
                 <TableCell className="py-3 px-4 text-left">Mancanti</TableCell>
               </TableRow>
             </TableHead>
-            <TableBody className="overflow-auto">
+            <TableBody>
               {(!scoresData || scoresData?.length === 0) && (
                 <TableRow key="no-user-row" className="bg-gray-50 ">
                   <TableCell colSpan={5}>
@@ -102,13 +131,20 @@ const Scores = () => {
                     {index + 1}
                   </TableCell>
                   <TableCell className="py-3 px-4 font-medium">
-                    {user.name}
+                    <div className="w-full flex gap-2 items-center">
+                      <Avatar alt={user.name} src={user.imgLink}>
+                        {user?.name[0]?.toUpperCase() || "x"}
+                      </Avatar>
+                      <div>{user.name}</div>
+                    </div>
                   </TableCell>
-                  <TableCell className="py-3 px-4">{user.score}</TableCell>
                   <TableCell className="py-3 px-4 w-1/3">
-                    <div className="w-full bg-gray-200 rounded-full h-4">
+                    <div
+                      style={{ position: "relative" }}
+                      className="w-full bg-gray-200 rounded-full h-6 text-white font-bold"
+                    >
                       <div
-                        className="bg-blue-500 h-4 rounded-full"
+                        className="bg-blue-500 h-6 rounded-full"
                         style={{
                           width: `${calculateProgress(
                             user.score,
@@ -116,6 +152,14 @@ const Scores = () => {
                           )}%`,
                         }}
                       />
+                      <div
+                        className="-translate-x-1/2"
+                        style={{
+                          position: "absolute",
+                          bottom: "1px",
+                          left: "50%",
+                        }}
+                      >{`${user.score || "0"}/${user.totalQuestions}`}</div>
                     </div>
                   </TableCell>
                   <TableCell className="py-3 px-4">

@@ -23,8 +23,11 @@ const AdminAppContainer = () => {
         alt="quizzle logo"
         width={200}
       />
+
       <Outlet />
-      <BottomNav value={value} handleChange={handleChange} isAdmin={true} />
+      <div className="flex-1">
+        <BottomNav value={value} handleChange={handleChange} isAdmin={true} />
+      </div>
     </>
   );
 };
