@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import QuestionCard from "../../components/QuestionCard";
-import { IconButton } from "@mui/material";
+import { Avatar, IconButton } from "@mui/material";
 import ArrowCircleLeftOutlinedIcon from "@mui/icons-material/ArrowCircleLeftOutlined";
 import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
 import { Challenger } from "../../../types/challenger";
@@ -77,13 +77,15 @@ const Questions = () => {
   };
 
   return (
-    <div className="w-11/12 mx-auto flex flex-col h-full justify-start gap-4">
+    <div className="w-11/12 mx-auto flex flex-col h-full justify-start gap-4 overflow-auto">
       <div className="flex items-center bg-white p-2 rounded-lg shadow">
-        <img
-          src={challengerData?.imgLink || require("../../../imgs/account.png")}
+        <Avatar
+          className="mr-4"
           alt={challengerData?.name}
-          className="w-14 h-14 object-contain mr-4"
-        />
+          src={challengerData?.imgLink || require("../../../imgs/account.png")}
+        >
+          {challengerData?.name[0].toUpperCase()}
+        </Avatar>
         <div>
           <h1 className="text-2xl font-bold text-blue-700">
             {challengerData?.name}

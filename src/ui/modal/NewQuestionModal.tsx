@@ -19,6 +19,7 @@ import CustomizedSnackbar from "../components/CustomizedSnackbar";
 import { snackbarPropsType } from "../../types/misc";
 const defaultFormValue = {
   question: "",
+  media: "",
   options: ["", "", "", ""],
   correctOpt: undefined,
   adminUsername: "",
@@ -47,6 +48,7 @@ const NewQuestionModal = () => {
     try {
       const data: addQuestionPayload = {
         question: form.question,
+        media: form.media,
         correctOpt: form.correctOpt || 0,
         options: form.options,
         adminUsername: username,
@@ -82,7 +84,6 @@ const NewQuestionModal = () => {
     index?: number
   ) => {
     const { name, value } = e.target;
-    if (name === "question") setForm({ ...form, question: value });
     if (name === "opt")
       setForm({
         ...form,
@@ -90,6 +91,9 @@ const NewQuestionModal = () => {
           i === (index || 0) ? value : opt
         ),
       });
+    else {
+      setForm({ ...form, [name]: value });
+    }
   };
 
   const handleRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,7 +113,7 @@ const NewQuestionModal = () => {
     checkIsFormFilled();
     // eslint-disable-next-line
   }, [form]);
-
+  console.log("form", form);
   return (
     <>
       <IconButton
@@ -138,6 +142,31 @@ const NewQuestionModal = () => {
             autoComplete="off"
             value={form.question}
           />
+          <div className="flex gap-2 items-center mt-2">
+            <TextField
+              multiline
+              rows={5}
+              label="Media"
+              onChange={onInputChange}
+              name="media"
+              type="text"
+              variant="outlined"
+              autoComplete="off"
+              value={form.media}
+            />
+            <div
+              style={{ width: 200, height: 150 }}
+              className={`flex justify-center border border-gray-200 rounded-md ${
+                !form.media && "bg-slate-50"
+              }`}
+            >
+              {form.media ? (
+                <img src={form.media} alt="question media" width={180} />
+              ) : (
+                <>Anteprima</>
+              )}
+            </div>
+          </div>
           <DialogContentText fontWeight={700}>Risposte</DialogContentText>
           <div className="flex justify-between items-center">
             <div className="w-full flex flex-col justify-between">

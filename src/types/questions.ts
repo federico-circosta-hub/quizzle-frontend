@@ -1,6 +1,7 @@
 export type Question = {
   _id: string;
   question: string;
+  media: string;
   options: string[];
   correctOpt: number;
   adminUsername: string;
@@ -10,6 +11,7 @@ export type Question = {
 
 export type NewQuestion = {
   question: string;
+  media: string;
   options: string[];
   correctOpt: number | undefined;
   adminUsername: string;

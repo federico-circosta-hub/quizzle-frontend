@@ -95,6 +95,9 @@ const Questions = () => {
                         </div>
                       </AccordionSummary>
                       <AccordionDetails style={{ paddingTop: 0 }}>
+                        {q.media && (
+                          <img src={q.media} alt="question media" width={200} />
+                        )}
                         {q.options.map((op, opInd) => (
                           <div className="flex w-full" key={opInd}>
                             -

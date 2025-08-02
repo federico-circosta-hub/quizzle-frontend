@@ -1,5 +1,6 @@
 import { QuestionWithAnswer } from "../../types/questions";
-
+const screenHeight = window.innerHeight;
+const boxHeight = Math.floor(1.042 * screenHeight - 394.93);
 const QuestionCard = ({
   question,
   index,
@@ -17,7 +18,8 @@ const QuestionCard = ({
 }) => {
   return (
     <div
-      className={`bg-white p-4 h-80 overflow-auto rounded-lg shadow ${
+      style={{ maxHeight: `${boxHeight}px` }}
+      className={`bg-white overflow-auto p-4 rounded-lg shadow ${
         question?.wasAnswered
           ? question.isCorrect
             ? "border-l-8 border-green-500"
@@ -25,25 +27,23 @@ const QuestionCard = ({
           : "border-l-8 border-blue-500"
       }`}
     >
-      {/* <div className="flex justify-between items-center mb-2">
-        <h2 className="text-sm font-medium">Domanda {index + 1}</h2>
-        {question.wasAnswered && (
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-medium ${
-              question.isCorrect
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            }`}
-          >
-            {question.isCorrect ? "Corretta" : "Errata"}
-          </span>
-        )}
-      </div> */}
-
       <p className="text-base font-semibold text-gray-800 mb-2">
         {question?.questionId.question}
       </p>
-
+      {question?.questionId?.media && (
+        <div className="w-full flex justify-center mb-4">
+          <div
+            style={{ width: 200, height: 150 }}
+            className={`flex justify-center border border-gray-200 rounded-md`}
+          >
+            <img
+              src={question?.questionId.media}
+              alt="question media"
+              width={180}
+            />
+          </div>
+        </div>
+      )}
       <div className="space-y-1">
         {question?.questionId.options.map((option, optIndex) => (
           <div key={optIndex}>
