@@ -154,6 +154,17 @@ export const quizzleApi = createApi({
         },
       }),
     }),
+    deleteChallenger: builder.mutation({
+      query: (data) => ({
+        url: `/challenger/${data.id}`,
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: data.jwt,
+        },
+      }),
+      invalidatesTags: ["scores", "challenger", "challengers"],
+    }),
   }),
 });
 
@@ -171,4 +182,5 @@ export const {
   useCreateChallengerMutation,
   useAnswerQuestionMutation,
   useChallengerExistsQuery,
+  useDeleteChallengerMutation,
 } = quizzleApi;

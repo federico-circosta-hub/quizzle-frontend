@@ -20,6 +20,7 @@ import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import { snackbarPropsType } from "../../../types/misc";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
+import DeleteChallengerModal from "../../modal/DeleteChallengerModal";
 
 const Challengers = () => {
   const { jwt } = useAdmin();
@@ -136,6 +137,9 @@ const Challengers = () => {
                               <ContentCopyRoundedIcon fontSize="medium" />
                             </IconButton>
                           </Typography>
+                          <div className="w-full flex justify-start gap-4">
+                            <DeleteChallengerModal challenger={c} />
+                          </div>
                         </AccordionDetails>
                       </Accordion>
                     );
