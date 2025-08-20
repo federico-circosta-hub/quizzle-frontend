@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import BottomNav from "../components/BottomNav";
+import LogoLine from "../components/LogoLine";
 
 const routes = {
   0: "/admin/dashboard/scores",
@@ -18,12 +19,7 @@ const AdminAppContainer = () => {
   };
   return (
     <>
-      <img
-        src={require("../../imgs/logo3.png")}
-        alt="quizzle logo"
-        width={200}
-      />
-
+      <LogoLine />
       <Outlet />
       <div className="flex-1">
         <BottomNav value={value} handleChange={handleChange} isAdmin={true} />

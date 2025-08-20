@@ -5,6 +5,7 @@ import { useChallengerExistsQuery } from "../../redux/api";
 import { CircularProgress } from "@mui/material";
 import ErrorPage from "../components/ErrorPage";
 import AdminPassphraseModal from "../modal/AdminPassphraseModal";
+import LogoLine from "../components/LogoLine";
 
 type RoutesType = {
   0: string;
@@ -60,11 +61,7 @@ const ChallengerAppContainer = () => {
 
   return (
     <>
-      <img
-        src={require("../../imgs/logo3.png")}
-        alt="quizzle logo"
-        width={200}
-      />
+      <LogoLine />
       {isLoading ? (
         <CircularProgress />
       ) : !challengerExists ? (

@@ -6,6 +6,7 @@ import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import { useDispatch } from "react-redux";
 import { setAdminStuff } from "../../../redux/adminSlice";
 import { jwtDecode } from "jwt-decode";
+import LogoLine from "../../components/LogoLine";
 const defaultFormValue = { username: "", passphrase: "", password: "" };
 const defaultMissingField = "Campo obbligatorio";
 const Login = () => {
@@ -104,7 +105,7 @@ const Login = () => {
   return (
     <>
       <div className="bg-white p-6 rounded-2xl shadow-lg w-11/12 max-w-md">
-        <img src={require("../../../imgs/logo3.png")} alt="quizzle logo" />
+        <LogoLine />
         <Tabs
           value={tab}
           onChange={(e, newValue) => tabChange(newValue)}
