@@ -15,6 +15,7 @@ import {
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import SyncIcon from "@mui/icons-material/Sync";
 import useAdmin from "../../hooks/useAdmin";
+import Loading from "../components/Loading";
 
 const Scores = () => {
   const { username } = useAdmin();
@@ -100,82 +101,90 @@ const Scores = () => {
           </IconButton>
         </div>
 
-        <TableContainer className="overflow-auto">
-          <Table stickyHeader className="w-full">
-            <TableHead className="bg-gray-100">
-              <TableRow>
-                <TableCell className="py-3 px-4 text-left">#</TableCell>
-                <TableCell className="py-3 px-4 text-left">
-                  Challenger
-                </TableCell>
-                <TableCell className="py-3 px-4 text-left">Progresso</TableCell>
-                <TableCell className="py-3 px-4 text-left">Mancanti</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(!scoresData || scoresData?.length === 0) && (
-                <TableRow key="no-user-row" className="bg-gray-50 ">
-                  <TableCell colSpan={5}>
-                    <p className="flex justify-center w-full font-semibold">
-                      Non sono presenti challenger
-                    </p>
+        {isFetching || isLoading || rotating ? (
+          <Loading />
+        ) : (
+          <TableContainer className="overflow-auto">
+            <Table stickyHeader className="w-full">
+              <TableHead className="bg-gray-100">
+                <TableRow>
+                  <TableCell className="py-3 px-4 text-left">#</TableCell>
+                  <TableCell className="py-3 px-4 text-left">
+                    Challenger
+                  </TableCell>
+                  <TableCell className="py-3 px-4 text-left">
+                    Progresso
+                  </TableCell>
+                  <TableCell className="py-3 px-4 text-left">
+                    Mancanti
                   </TableCell>
                 </TableRow>
-              )}
-              {scoresData?.map((user, index) => (
-                <TableRow
-                  key={user.name}
-                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
-                >
-                  <TableCell className="py-3 px-4 font-medium">
-                    {index + 1}
-                  </TableCell>
-                  <TableCell className="py-3 px-4 font-medium">
-                    <div className="w-full flex gap-2 items-center">
-                      <Avatar alt={user.name} src={user.imgLink}>
-                        {user?.name[0]?.toUpperCase() || "x"}
-                      </Avatar>
-                      <div>{user.name}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-3 px-4 w-1/3">
-                    <div
-                      style={{ position: "relative" }}
-                      className="w-full bg-gray-200 rounded-full h-6 text-white font-bold"
-                    >
+              </TableHead>
+              <TableBody>
+                {(!scoresData || scoresData?.length === 0) && (
+                  <TableRow key="no-user-row" className="bg-gray-50 ">
+                    <TableCell colSpan={5}>
+                      <p className="flex justify-center w-full font-semibold">
+                        Non sono presenti challenger
+                      </p>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {scoresData?.map((user, index) => (
+                  <TableRow
+                    key={user.name}
+                    className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                  >
+                    <TableCell className="py-3 px-4 font-medium">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell className="py-3 px-4 font-medium">
+                      <div className="w-full flex gap-2 items-center">
+                        <Avatar alt={user.name} src={user.imgLink}>
+                          {user?.name[0]?.toUpperCase() || "x"}
+                        </Avatar>
+                        <div>{user.name}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-3 px-4 w-1/3">
                       <div
-                        className="bg-blue-500 h-6 rounded-full"
-                        style={{
-                          width: `${calculateProgress(
-                            user.score,
-                            user.totalQuestions
-                          )}%`,
-                        }}
-                      />
-                      <div
-                        className="-translate-x-1/2"
-                        style={{
-                          position: "absolute",
-                          bottom: "1px",
-                          left: "50%",
-                        }}
-                      >{`${user.score || "0"}/${user.totalQuestions}`}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-3 px-4">
-                    {user.notAnsweredQuestions > 0 ? (
-                      <Typography color="error" fontWeight={700}>
-                        {user.notAnsweredQuestions}
-                      </Typography>
-                    ) : (
-                      <CheckCircleOutlineIcon color="success" />
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                        style={{ position: "relative" }}
+                        className="w-full bg-gray-200 rounded-full h-6 text-white font-bold"
+                      >
+                        <div
+                          className="bg-blue-500 h-6 rounded-full"
+                          style={{
+                            width: `${calculateProgress(
+                              user.score,
+                              user.totalQuestions
+                            )}%`,
+                          }}
+                        />
+                        <div
+                          className="-translate-x-1/2"
+                          style={{
+                            position: "absolute",
+                            bottom: "1px",
+                            left: "50%",
+                          }}
+                        >{`${user.score || "0"}/${user.totalQuestions}`}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-3 px-4">
+                      {user.notAnsweredQuestions > 0 ? (
+                        <Typography color="error" fontWeight={700}>
+                          {user.notAnsweredQuestions}
+                        </Typography>
+                      ) : (
+                        <CheckCircleOutlineIcon color="success" />
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </div>
     </div>
   );

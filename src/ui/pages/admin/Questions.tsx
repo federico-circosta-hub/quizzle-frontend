@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useQuestionsQuery } from "../../../redux/api";
+import { useLazyQuestionsQuery } from "../../../redux/api";
 import {
   Accordion,
   AccordionDetails,
@@ -21,16 +21,24 @@ import NewQuestionModal from "../../modal/NewQuestionModal";
 import useAdmin from "../../../hooks/useAdmin";
 import PublishQuestionModal from "../../modal/PublishQuestionModal";
 import DeleteQuestionModal from "../../modal/DeleteQuestionModal";
+import Loading from "../../components/Loading";
 
 const Questions = () => {
   const { username } = useAdmin();
   const [questionsData, setQuestionsData] = useState<Question[]>();
   const [accordionExpanded, setAccordionExpanded] = useState<string>();
-  const questions = useQuestionsQuery(username);
+  const [getQuestionsFromApi, { isLoading, isFetching }] =
+    useLazyQuestionsQuery();
 
   useEffect(() => {
-    if (questions.data) setQuestionsData(questions.data);
-  }, [questions]);
+    getQuestions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getQuestions = async () => {
+    const res = await getQuestionsFromApi(username);
+    setQuestionsData(res.data);
+  };
 
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
@@ -44,92 +52,100 @@ const Questions = () => {
           <h2 className="text-xl font-semibold">{`Domande (${questionsData?.length})`}</h2>
           <NewQuestionModal />
         </div>
-        <TableContainer className="flex-1 overflow-auto">
-          <Table stickyHeader className="w-full">
-            <TableBody>
-              {(!questionsData || questionsData?.length === 0) && (
-                <TableRow key="no-question-row" className="bg-gray-50 ">
-                  <TableCell>
-                    <p className="flex justify-center w-full font-semibold">
-                      Non hai ancora creato delle domande
-                    </p>
-                  </TableCell>
-                </TableRow>
-              )}
-              <TableRow>
-                <TableCell sx={{ padding: 0 }} className="font-medium">
-                  {questionsData?.map((q, index) => (
-                    <Accordion
-                      key={q._id}
-                      expanded={accordionExpanded === index.toString()}
-                      onChange={handleAccordionChange(index.toString())}
-                    >
-                      <AccordionSummary
-                        expandIcon={<ArrowDropDownIcon />}
-                        aria-controls="panel1-content"
-                        id="panel1-header"
+        {isFetching || isLoading ? (
+          <Loading />
+        ) : (
+          <TableContainer className="flex-1 overflow-auto">
+            <Table stickyHeader className="w-full">
+              <TableBody>
+                {(!questionsData || questionsData?.length === 0) && (
+                  <TableRow key="no-question-row" className="bg-gray-50 ">
+                    <TableCell>
+                      <p className="flex justify-center w-full font-semibold">
+                        Non hai ancora creato delle domande
+                      </p>
+                    </TableCell>
+                  </TableRow>
+                )}
+                <TableRow>
+                  <TableCell sx={{ padding: 0 }} className="font-medium">
+                    {questionsData?.map((q, index) => (
+                      <Accordion
+                        key={q._id}
+                        expanded={accordionExpanded === index.toString()}
+                        onChange={handleAccordionChange(index.toString())}
                       >
-                        <div className="w-full flex flex-col gap-2">
-                          <div className="w-full flex">
-                            {q.isPublished ? (
-                              <Chip
-                                icon={<PublicIcon />}
-                                size="small"
-                                label="Pubblicata"
-                                color="success"
-                                variant="outlined"
-                              />
-                            ) : (
-                              <Chip
-                                icon={<PublicOffIcon />}
-                                size="small"
-                                label="Non pubblicata"
-                                color="warning"
-                                variant="outlined"
-                              />
-                            )}
-                          </div>
-                          <Typography component="span">{`${index + 1}. ${
-                            q.question
-                          }`}</Typography>
-                        </div>
-                      </AccordionSummary>
-                      <AccordionDetails style={{ paddingTop: 0 }}>
-                        {q.media && (
-                          <img src={q.media} alt="question media" width={200} />
-                        )}
-                        {q.options.map((op, opInd) => (
-                          <div className="flex w-full" key={opInd}>
-                            -
-                            <Typography
-                              padding="1px"
-                              fontWeight={opInd === q.correctOpt ? 700 : 500}
-                            >
-                              {op}
-                              {opInd === q.correctOpt && (
-                                <CheckCircleRoundedIcon
-                                  fontSize="small"
+                        <AccordionSummary
+                          expandIcon={<ArrowDropDownIcon />}
+                          aria-controls="panel1-content"
+                          id="panel1-header"
+                        >
+                          <div className="w-full flex flex-col gap-2">
+                            <div className="w-full flex">
+                              {q.isPublished ? (
+                                <Chip
+                                  icon={<PublicIcon />}
+                                  size="small"
+                                  label="Pubblicata"
                                   color="success"
+                                  variant="outlined"
+                                />
+                              ) : (
+                                <Chip
+                                  icon={<PublicOffIcon />}
+                                  size="small"
+                                  label="Non pubblicata"
+                                  color="warning"
+                                  variant="outlined"
                                 />
                               )}
-                            </Typography>
+                            </div>
+                            <Typography component="span">{`${index + 1}. ${
+                              q.question
+                            }`}</Typography>
                           </div>
-                        ))}
-
-                        <div className="w-full flex justify-end gap-4">
-                          <DeleteQuestionModal question={q} />
-                          {!q.isPublished && (
-                            <PublishQuestionModal question={q} />
+                        </AccordionSummary>
+                        <AccordionDetails style={{ paddingTop: 0 }}>
+                          {q.media && (
+                            <img
+                              src={q.media}
+                              alt="question media"
+                              width={200}
+                            />
                           )}
-                        </div>
-                      </AccordionDetails>
-                    </Accordion>
-                  ))}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+                          {q.options.map((op, opInd) => (
+                            <div className="flex w-full" key={opInd}>
+                              -
+                              <Typography
+                                padding="1px"
+                                fontWeight={opInd === q.correctOpt ? 700 : 500}
+                              >
+                                {op}
+                                {opInd === q.correctOpt && (
+                                  <CheckCircleRoundedIcon
+                                    fontSize="small"
+                                    color="success"
+                                  />
+                                )}
+                              </Typography>
+                            </div>
+                          ))}
+
+                          <div className="w-full flex justify-end gap-4">
+                            <DeleteQuestionModal question={q} />
+                            {!q.isPublished && (
+                              <PublishQuestionModal question={q} />
+                            )}
+                          </div>
+                        </AccordionDetails>
+                      </Accordion>
+                    ))}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </div>
     </div>
   );

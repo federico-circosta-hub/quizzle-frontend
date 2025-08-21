@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import NewChallengerModal from "../../modal/NewChallengerModal";
-import { useChallengersQuery } from "../../../redux/api";
+import { useLazyChallengersQuery } from "../../../redux/api";
 import useAdmin from "../../../hooks/useAdmin";
 import { Challenger } from "../../../types/challenger";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -21,6 +21,7 @@ import ContentCopyRoundedIcon from "@mui/icons-material/ContentCopyRounded";
 import { snackbarPropsType } from "../../../types/misc";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import DeleteChallengerModal from "../../modal/DeleteChallengerModal";
+import Loading from "../../components/Loading";
 
 const Challengers = () => {
   const { jwt } = useAdmin();
@@ -29,11 +30,18 @@ const Challengers = () => {
   const [snackbarProps, setSnackbarProps] = useState<snackbarPropsType>();
 
   const basePath = window.location;
-  const challengers = useChallengersQuery(jwt);
+  const [getChallengersFromApi, { isLoading, isFetching }] =
+    useLazyChallengersQuery();
 
   useEffect(() => {
-    if (challengers.data) setChallengersData(challengers.data);
-  }, [challengers]);
+    getChallengers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getChallengers = async () => {
+    const res = await getChallengersFromApi(jwt);
+    setChallengersData(res.data);
+  };
 
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
@@ -90,65 +98,71 @@ const Challengers = () => {
           })`}</h2>
           <NewChallengerModal />
         </div>
-        <TableContainer className="flex-1 overflow-auto">
-          <Table stickyHeader className="w-full">
-            <TableBody className="overflow-auto">
-              {(!challengersData || challengersData?.length === 0) && (
-                <TableRow key="no-question-row" className="bg-gray-50 ">
-                  <TableCell>
-                    <p className="flex justify-center w-full font-semibold">
-                      Non hai ancora creato dei challenger
-                    </p>
+        {isFetching || isLoading ? (
+          <Loading />
+        ) : (
+          <TableContainer className="flex-1 overflow-auto">
+            <Table stickyHeader className="w-full">
+              <TableBody className="overflow-auto">
+                {(!challengersData || challengersData?.length === 0) &&
+                  !isFetching &&
+                  !isLoading && (
+                    <TableRow key="no-question-row" className="bg-gray-50 ">
+                      <TableCell>
+                        <p className="flex justify-center w-full font-semibold">
+                          Non hai ancora creato dei challenger
+                        </p>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                <TableRow>
+                  <TableCell sx={{ padding: 0 }} className="font-medium">
+                    {challengersData?.map((c, index) => {
+                      const challengerLink = `${basePath
+                        .toString()
+                        .split("/")
+                        .slice(0, 3)
+                        .join("/")}/challenger/${c.name}/${c._id}`;
+                      return (
+                        <Accordion
+                          key={c._id}
+                          expanded={accordionExpanded === index.toString()}
+                          onChange={handleAccordionChange(index.toString())}
+                        >
+                          <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
+                            <div className="flex justify-start items-center gap-4">
+                              <Avatar alt={c.name} src={c.imgLink}>
+                                {c.name[0].toUpperCase()}
+                              </Avatar>
+                              <Typography component="span">{c.name}</Typography>
+                            </div>
+                          </AccordionSummary>
+                          <AccordionDetails>
+                            <Typography
+                              padding={1}
+                              fontWeight={500}
+                              className="flex justify-between items-center rounded-md"
+                            >
+                              {`${challengerLink.slice(0, 31)}...`}
+                              <IconButton
+                                onClick={() => handleCopy(challengerLink)}
+                              >
+                                <ContentCopyRoundedIcon fontSize="medium" />
+                              </IconButton>
+                            </Typography>
+                            <div className="w-full flex justify-start gap-4">
+                              <DeleteChallengerModal challenger={c} />
+                            </div>
+                          </AccordionDetails>
+                        </Accordion>
+                      );
+                    })}
                   </TableCell>
                 </TableRow>
-              )}
-              <TableRow>
-                <TableCell sx={{ padding: 0 }} className="font-medium">
-                  {challengersData?.map((c, index) => {
-                    const challengerLink = `${basePath
-                      .toString()
-                      .split("/")
-                      .slice(0, 3)
-                      .join("/")}/challenger/${c.name}/${c._id}`;
-                    return (
-                      <Accordion
-                        key={c._id}
-                        expanded={accordionExpanded === index.toString()}
-                        onChange={handleAccordionChange(index.toString())}
-                      >
-                        <AccordionSummary expandIcon={<ArrowDropDownIcon />}>
-                          <div className="flex justify-start items-center gap-4">
-                            <Avatar alt={c.name} src={c.imgLink}>
-                              {c.name[0].toUpperCase()}
-                            </Avatar>
-                            <Typography component="span">{c.name}</Typography>
-                          </div>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                          <Typography
-                            padding={1}
-                            fontWeight={500}
-                            className="flex justify-between items-center rounded-md"
-                          >
-                            {`${challengerLink.slice(0, 31)}...`}
-                            <IconButton
-                              onClick={() => handleCopy(challengerLink)}
-                            >
-                              <ContentCopyRoundedIcon fontSize="medium" />
-                            </IconButton>
-                          </Typography>
-                          <div className="w-full flex justify-start gap-4">
-                            <DeleteChallengerModal challenger={c} />
-                          </div>
-                        </AccordionDetails>
-                      </Accordion>
-                    );
-                  })}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </div>
       <CustomizedSnackbar
         isOpen={!!snackbarProps?.isOpen}

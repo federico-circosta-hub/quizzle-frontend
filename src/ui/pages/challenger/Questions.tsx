@@ -6,12 +6,13 @@ import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOu
 import { Challenger } from "../../../types/challenger";
 import {
   useAnswerQuestionMutation,
-  useChallengerQuery,
+  useLazyChallengerQuery,
 } from "../../../redux/api";
 import { useParams } from "react-router-dom";
 import { errorType, snackbarPropsType } from "../../../types/misc";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import { getError } from "../../../utils/functions";
+import Loading from "../../components/Loading";
 
 const Questions = () => {
   const { id } = useParams();
@@ -22,11 +23,18 @@ const Questions = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [snackbarProps, setSnackbarProps] = useState<snackbarPropsType>();
 
-  const challenger = useChallengerQuery(id || "");
+  const [getChallengerFromApi, { isLoading, isFetching }] =
+    useLazyChallengerQuery();
 
   useEffect(() => {
-    if (challenger.data) setChallengerData(challenger.data);
-  }, [challenger]);
+    getChallenger();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getChallenger = async () => {
+    const res = await getChallengerFromApi(id || "");
+    setChallengerData(res.data);
+  };
 
   const questions = challengerData?.questions;
   const currentQuestion = questions && questions[currentQuestionIndex];
@@ -84,25 +92,26 @@ const Questions = () => {
           alt={challengerData?.name}
           src={challengerData?.imgLink || require("../../../imgs/account.png")}
         >
-          {challengerData?.name[0].toUpperCase()}
+          {challengerData?.name[0].toUpperCase() || ""}
         </Avatar>
         <div>
           <h1 className="text-2xl font-bold text-blue-700">
-            {challengerData?.name}
+            {challengerData?.name || ""}
           </h1>
           <p className="text-gray-600">
-            Admin: {challengerData?.adminUsername}
+            Admin: {challengerData?.adminUsername || ""}
           </p>
         </div>
         <div className="ml-auto text-center">
           <div className="text-3xl font-bold text-blue-500">
-            {challengerData?.score}/{totalQuestions}
+            {challengerData?.score || ""}/{totalQuestions || ""}
           </div>
           <div className="text-sm text-gray-500">Punteggio</div>
         </div>
       </div>
-
-      {questions?.length === 0 ? (
+      {isFetching || isLoading ? (
+        <Loading />
+      ) : questions?.length === 0 ? (
         <p className="flex justify-center w-full font-semibold">
           L'admin non ha ancora pubblicato domande
         </p>
