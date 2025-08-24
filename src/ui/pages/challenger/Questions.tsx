@@ -6,13 +6,14 @@ import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOu
 import { Challenger } from "../../../types/challenger";
 import {
   useAnswerQuestionMutation,
-  useLazyChallengerQuery,
+  useChallengerQuery,
 } from "../../../redux/api";
 import { useParams } from "react-router-dom";
 import { errorType, snackbarPropsType } from "../../../types/misc";
 import CustomizedSnackbar from "../../components/CustomizedSnackbar";
 import { getError } from "../../../utils/functions";
 import Loading from "../../components/Loading";
+import ConfettiExplosion from "react-confetti-explosion";
 
 const Questions = () => {
   const { id } = useParams();
@@ -22,19 +23,17 @@ const Questions = () => {
   }>({});
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [snackbarProps, setSnackbarProps] = useState<snackbarPropsType>();
+  const [celebrate, setCelebrate] = useState<boolean>(false);
 
-  const [getChallengerFromApi, { isLoading, isFetching }] =
-    useLazyChallengerQuery();
+  const {
+    data: challenger,
+    isLoading,
+    isFetching,
+  } = useChallengerQuery(id ?? "");
 
   useEffect(() => {
-    getChallenger();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const getChallenger = async () => {
-    const res = await getChallengerFromApi(id || "");
-    setChallengerData(res.data);
-  };
+    if (challenger) setChallengerData(challenger);
+  }, [challenger]);
 
   const questions = challengerData?.questions;
   const currentQuestion = questions && questions[currentQuestionIndex];
@@ -54,6 +53,7 @@ const Questions = () => {
 
   const handleSubmitAnswer = async () => {
     try {
+      setCelebrate(false);
       const data = {
         challengerName: challengerData?.name,
         adminUsername: challengerData?.adminUsername,
@@ -61,6 +61,7 @@ const Questions = () => {
         userAnswer: currentQuestion && selectedAnswers[currentQuestion._id],
       };
       const res = await answerQuestionCall(data);
+      console.log("res", res);
       if (res.error)
         return setSnackbarProps({
           isOpen: true,
@@ -68,12 +69,8 @@ const Questions = () => {
           content: `Risposta non inviata: ${getError(res.error as errorType)}`,
           severity: "error",
         });
-      setSnackbarProps({
-        isOpen: true,
-        setOwn: setSnackbarProps,
-        content: "Rsiposta inviata",
-        severity: "success",
-      });
+      if (res?.data?.challenger?.questions[currentQuestionIndex]?.isCorrect)
+        setTimeout(() => setCelebrate(true), 750);
     } catch (error) {
       setSnackbarProps({
         isOpen: true,
@@ -104,7 +101,7 @@ const Questions = () => {
         </div>
         <div className="ml-auto text-center">
           <div className="text-3xl font-bold text-blue-500">
-            {challengerData?.score || ""}/{totalQuestions || ""}
+            {challengerData?.score ?? ""}/{totalQuestions ?? ""}
           </div>
           <div className="text-sm text-gray-500">Punteggio</div>
         </div>
@@ -142,7 +139,15 @@ const Questions = () => {
               </button>
             ))}
           </div>
-
+          {celebrate && (
+            <div className="w-full flex justify-center">
+              <ConfettiExplosion
+                particleCount={200}
+                duration={3000}
+                colors={["#3b82f6", "#4ade80", "#e0ffff"]}
+              />
+            </div>
+          )}
           <QuestionCard
             question={currentQuestion}
             index={currentQuestionIndex}

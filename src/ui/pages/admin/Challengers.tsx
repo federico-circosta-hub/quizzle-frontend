@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import NewChallengerModal from "../../modal/NewChallengerModal";
-import { useLazyChallengersQuery } from "../../../redux/api";
+import { useChallengersQuery } from "../../../redux/api";
 import useAdmin from "../../../hooks/useAdmin";
 import { Challenger } from "../../../types/challenger";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
@@ -30,18 +30,11 @@ const Challengers = () => {
   const [snackbarProps, setSnackbarProps] = useState<snackbarPropsType>();
 
   const basePath = window.location;
-  const [getChallengersFromApi, { isLoading, isFetching }] =
-    useLazyChallengersQuery();
+  const { data: challengers, isLoading, isFetching } = useChallengersQuery(jwt);
 
   useEffect(() => {
-    getChallengers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const getChallengers = async () => {
-    const res = await getChallengersFromApi(jwt);
-    setChallengersData(res.data);
-  };
+    if (challengers) setChallengersData(challengers);
+  }, [challengers]);
 
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {

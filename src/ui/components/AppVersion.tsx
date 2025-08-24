@@ -5,7 +5,7 @@ const AppVersion = () => {
   return (
     <div
       id="app-version"
-      className="absolute right-0 font-extralight text-xs text-[#3b82f6] p-1 pb-3 pr-2"
+      className="absolute right-[-32px] font-extralight text-xs text-[#3b82f6] p-1 pb-3"
     >
       ver {pkg.version}
     </div>

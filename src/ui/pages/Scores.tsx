@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLazyDashboardQuery } from "../../redux/api";
+import { useDashboardQuery } from "../../redux/api";
 import { scoreType } from "../../types/scores";
 import {
   Avatar,
@@ -21,23 +21,24 @@ const Scores = () => {
   const { username } = useAdmin();
   const [scoresData, setScoresData] = useState<scoreType[]>();
   const [rotating, setRotating] = useState<boolean>();
-  const [getScoresFromApi, { isLoading, isFetching }] = useLazyDashboardQuery();
-
-  const getScores = async () => {
-    const res = await getScoresFromApi(username);
-    setScoresData(res.data);
-  };
-
-  const handleUpdate = () => {
+  const {
+    data: scores,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useDashboardQuery(username);
+  console.log("scores", scores);
+  const handleUpdate = async () => {
     setRotating(true);
-    getScores();
+    await refetch();
     setTimeout(() => setRotating(false), 1500);
   };
 
   useEffect(() => {
-    getScores();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (scores) {
+      setScoresData(scores);
+    }
+  }, [scores]);
 
   const calculateProgress = (points: number, totalPoints: number) => {
     if (points === 0) return 0;
@@ -45,7 +46,7 @@ const Scores = () => {
   };
 
   return (
-    <div className="w-11/12 h-full mx-auto flex flex-col justify-start gap-4">
+    <div className="w-11/12 h-full mx-auto flex flex-col justify-start gap-1">
       <div className="grid grid-cols-3 gap-2 mb-2 flex-shrink-0">
         <div className="bg-white p-2 rounded-lg shadow text-center">
           <h2 className="text-sm font-semibold text-gray-700">

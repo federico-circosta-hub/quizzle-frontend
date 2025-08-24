@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLazyQuestionsQuery } from "../../../redux/api";
+import { useQuestionsQuery } from "../../../redux/api";
 import {
   Accordion,
   AccordionDetails,
@@ -27,18 +27,16 @@ const Questions = () => {
   const { username } = useAdmin();
   const [questionsData, setQuestionsData] = useState<Question[]>();
   const [accordionExpanded, setAccordionExpanded] = useState<string>();
-  const [getQuestionsFromApi, { isLoading, isFetching }] =
-    useLazyQuestionsQuery();
+
+  const {
+    data: questions,
+    isLoading,
+    isFetching,
+  } = useQuestionsQuery(username);
 
   useEffect(() => {
-    getQuestions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const getQuestions = async () => {
-    const res = await getQuestionsFromApi(username);
-    setQuestionsData(res.data);
-  };
+    if (questions) setQuestionsData(questions);
+  }, [questions]);
 
   const handleAccordionChange =
     (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
