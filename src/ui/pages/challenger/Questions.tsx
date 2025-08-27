@@ -70,7 +70,7 @@ const Questions = () => {
           severity: "error",
         });
       if (res?.data?.challenger?.questions[currentQuestionIndex]?.isCorrect)
-        setTimeout(() => setCelebrate(true), 750);
+        setTimeout(() => setCelebrate(true), 500);
     } catch (error) {
       setSnackbarProps({
         isOpen: true,

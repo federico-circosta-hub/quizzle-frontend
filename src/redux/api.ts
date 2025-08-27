@@ -76,6 +76,18 @@ export const quizzleApi = createApi({
       }),
       invalidatesTags: ["questions"],
     }),
+    editQuestion: builder.mutation({
+      query: (data) => ({
+        url: `/question/edit/${data.id}`,
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: data.jwt,
+        },
+        body: data,
+      }),
+      invalidatesTags: ["questions"],
+    }),
     publishQuestion: builder.mutation({
       query: (data) => ({
         url: `/question/publish-question`,
@@ -175,6 +187,7 @@ export const {
   useDashboardQuery,
   useQuestionsQuery,
   useAddQuestionMutation,
+  useEditQuestionMutation,
   usePublishQuestionMutation,
   useDeleteQuestionMutation,
   useChallengersQuery,

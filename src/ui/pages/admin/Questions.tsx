@@ -132,6 +132,9 @@ const Questions = () => {
                           <div className="w-full flex justify-end gap-4">
                             <DeleteQuestionModal question={q} />
                             {!q.isPublished && (
+                              <NewQuestionModal question={q} />
+                            )}
+                            {!q.isPublished && (
                               <PublishQuestionModal question={q} />
                             )}
                           </div>

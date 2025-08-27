@@ -13,3 +13,13 @@ export type addQuestionPayload = {
   adminUsername: string;
   jwt: string;
 };
+
+export type editQuestionPayload = {
+  id: string;
+  question: string;
+  media: string;
+  options: string[];
+  correctOpt: number;
+  adminUsername: string;
+  jwt: string;
+};

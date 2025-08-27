@@ -39,7 +39,7 @@ const QuestionCard = ({
             <img
               src={question?.questionId.media}
               alt="question media"
-              width={180}
+              max-width={180}
             />
           </div>
         </div>

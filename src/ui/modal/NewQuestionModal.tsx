@@ -9,10 +9,17 @@ import {
   IconButton,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { NewQuestion } from "../../types/questions";
+import EditIcon from "@mui/icons-material/Edit";
+import { NewQuestion, Question } from "../../types/questions";
 import { FormControlLabel, Radio, RadioGroup } from "@mui/material";
-import { useAddQuestionMutation } from "../../redux/api";
-import { addQuestionPayload } from "../../types/apiPayload";
+import {
+  useAddQuestionMutation,
+  useEditQuestionMutation,
+} from "../../redux/api";
+import {
+  addQuestionPayload,
+  editQuestionPayload,
+} from "../../types/apiPayload";
 import { useSelector } from "react-redux";
 import { stateType } from "../../redux/adminSlice";
 import CustomizedSnackbar from "../components/CustomizedSnackbar";
@@ -24,7 +31,7 @@ const defaultFormValue = {
   correctOpt: undefined,
   adminUsername: "",
 };
-const NewQuestionModal = () => {
+const NewQuestionModal = ({ question }: { question?: Question }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [form, setForm] = useState<NewQuestion>(defaultFormValue);
   const [isFormFilled, setIsFormFilled] = useState<boolean>();
@@ -34,8 +41,25 @@ const NewQuestionModal = () => {
     (state: { quizzle: stateType }) => state?.quizzle
   );
 
+  useEffect(() => {
+    if (question) {
+      const formByPropQuestion: NewQuestion = (({
+        question,
+        media,
+        options,
+        correctOpt,
+        adminUsername,
+      }) => ({ question, media, options, correctOpt, adminUsername }))(
+        question
+      );
+      setForm(formByPropQuestion);
+    }
+  }, [question]);
+
   const [addQuestionMutation, { isLoading: isAddingQuestion }] =
     useAddQuestionMutation();
+  const [editQuestionMutation, { isLoading: isEditingQuestion }] =
+    useEditQuestionMutation();
   const handleClickOpenDialog = () => {
     setOpenDialog(true);
   };
@@ -68,12 +92,50 @@ const NewQuestionModal = () => {
         content: "Domanda aggiunta",
         severity: "success",
       });
+      setForm(defaultFormValue);
       handleCloseDialog();
     } catch (error) {
       setSnackbarProps({
         isOpen: true,
         setOwn: setSnackbarProps,
         content: "Domanda non aggiunta",
+        severity: "error",
+      });
+    }
+  };
+
+  const handleEditQuestion = async () => {
+    try {
+      const data: editQuestionPayload = {
+        id: question?._id as string,
+        question: form.question,
+        media: form.media,
+        correctOpt: form.correctOpt || 0,
+        options: form.options,
+        adminUsername: username,
+        jwt: jwt,
+      };
+      const res = await editQuestionMutation(data);
+      if (res.error)
+        return setSnackbarProps({
+          isOpen: true,
+          setOwn: setSnackbarProps,
+          content: "Domanda non modificata",
+          severity: "error",
+        });
+      setSnackbarProps({
+        isOpen: true,
+        setOwn: setSnackbarProps,
+        content: "Domanda modificata",
+        severity: "success",
+      });
+      setForm(defaultFormValue);
+      handleCloseDialog();
+    } catch (error) {
+      setSnackbarProps({
+        isOpen: true,
+        setOwn: setSnackbarProps,
+        content: "Domanda non modificata",
         severity: "error",
       });
     }
@@ -122,7 +184,7 @@ const NewQuestionModal = () => {
         onClick={handleClickOpenDialog}
         className="shadow-lg"
       >
-        <AddIcon color="info" />
+        {!!question ? <EditIcon /> : <AddIcon color="info" />}
       </IconButton>
 
       <Drawer open={openDialog} onClose={handleCloseDialog} anchor="bottom">
@@ -146,7 +208,7 @@ const NewQuestionModal = () => {
             <TextField
               multiline
               rows={5}
-              label="Media"
+              label="Media link"
               onChange={onInputChange}
               name="media"
               type="text"
@@ -195,7 +257,7 @@ const NewQuestionModal = () => {
                     <FormControlLabel
                       sx={{ margin: 0 }}
                       value={index}
-                      control={<Radio />}
+                      control={<Radio checked={index === form.correctOpt} />}
                       label
                     />
                   </div>
@@ -207,8 +269,8 @@ const NewQuestionModal = () => {
         <DialogActions>
           <Button onClick={handleCloseDialog}>Chiudi</Button>
           <Button
-            disabled={!isFormFilled || isAddingQuestion}
-            onClick={handleSaveQuestion}
+            disabled={!isFormFilled || isAddingQuestion || isEditingQuestion}
+            onClick={!!question ? handleEditQuestion : handleSaveQuestion}
           >
             Salva
           </Button>
