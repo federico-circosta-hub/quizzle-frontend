@@ -55,8 +55,8 @@ const Scores = () => {
               alt="Trophy shiny icon"
               width={50}
             />
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute inset-0 -translate-x-full rotate-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shine" />
+            <div className="absolute inset-0 scale-150 overflow-hidden pointer-events-none">
+              <div className="absolute inset-0  h-[140%] -translate-x-full -translate-y-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shine" />
             </div>
           </div>
         );
