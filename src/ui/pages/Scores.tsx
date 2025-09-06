@@ -53,7 +53,7 @@ const Scores = () => {
             <img
               src={require("../../imgs/trophy.png")}
               alt="Trophy shiny icon"
-              width={50}
+              width={35}
             />
             <div className="absolute inset-0 scale-150 overflow-hidden pointer-events-none">
               <div className="absolute inset-0  h-[140%] -translate-x-full -translate-y-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shine" />
@@ -65,7 +65,7 @@ const Scores = () => {
           <img
             src={require("../../imgs/second_alt.png")}
             alt="second place icon"
-            width={50}
+            width={30}
           />
         );
       case 2:
@@ -73,7 +73,7 @@ const Scores = () => {
           <img
             src={require("../../imgs/third_alt.png")}
             alt="third place icon"
-            width={50}
+            width={30}
           />
         );
       default:
@@ -122,7 +122,9 @@ const Scores = () => {
       <div className="bg-white rounded-lg shadow overflow-hidden flex flex-col h-2/3">
         <div className="flex justify-between w-full bg-blue-500 items-center flex-shrink-0">
           <div className="flex justify-start gap-3 items-center p-4">
-            <h2 className="text-xl font-semibold  text-white">Classifica</h2>{" "}
+            <span className="text-xl h-[25px] font-semibold  text-white">
+              Classifica
+            </span>
             <img
               src={require("../../imgs/ranking.png")}
               alt="ranking icon"
@@ -188,7 +190,20 @@ const Scores = () => {
                     </TableCell>
                     <TableCell className="py-3 px-4 font-medium">
                       <div className="w-full flex gap-2 items-center">
-                        <Avatar alt={user.name} src={user.imgLink}>
+                        <Avatar
+                          alt={user.name}
+                          src={user.imgLink}
+                          style={{
+                            border:
+                              index === 0
+                                ? "3px solid #ffc12e"
+                                : index === 1
+                                ? "2px solid #a9d3d8"
+                                : index === 2
+                                ? "1px solid #c76e5b"
+                                : undefined,
+                          }}
+                        >
                           {user?.name[0]?.toUpperCase() || "x"}
                         </Avatar>
                         <div
